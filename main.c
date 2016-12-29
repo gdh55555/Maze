@@ -4,10 +4,7 @@
 #include <string.h>
 #include "maze.h"
 
-#define MAXLEN 1024
-extern int ROW, COL;  //maze row and col
-extern int sx, sy, ex, ey; //the (sx, sy) is start point (ex, ey) is end point
-extern int** maze;
+#define MAXLEN 256
 
 
 void usage(){
@@ -22,6 +19,8 @@ int main(int argc, char* argv[]){
     char MazeFileName[MAXLEN], SolutionFileName[MAXLEN];
     //display the maze or not; default false; use -d to open it
     bool isDisplay = false;
+    Maze maze;
+
     //check argc
     if(argc == 3){
         strncpy(MazeFileName, argv[1], MAXLEN);
@@ -36,25 +35,14 @@ int main(int argc, char* argv[]){
         usage();
         exit(1);
     }
-    FILE *MazeFile, *SolutionFile;
-    if((MazeFile = fopen(MazeFileName, "r")) == NULL){
-        printf("Maze File can't read");
-        exit(1);
-    }
-    if(!read_maze(MazeFile, maze)){
+    if((maze = Maze_new()) ==NULL)
+        ;
+    if(!Maze_read(maze, MazeFileName)){
         printf("read maze file error\n");
         exit(1);
     }
-    //just for test
-    /*
-    for(int i =0;i < ROW; i++){
-        for(int j = 0; j < COL; j++){
-            printf("%d ", maze[i][j]);
-        }
-        printf("\n");
-    }
-    */
-    display_maze(ROW, COL, maze);
+    Maze_print_test(maze);
+    Maze_display(maze);
 
 
 
