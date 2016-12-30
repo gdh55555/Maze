@@ -1,1 +1,17 @@
-#Maze project
+#Maze program
+
+Compiling
+----------
+make in the current folder. This will create executable 
+for this program
+
+Running
+----------
+./Maze [-d] MazeFileName SolutionFileName
+[-d] is optional, can show the maze graph, and finally shortest
+path from start to end
+
+MazeFileName is the name of the maze file that should be read.
+
+SolutionFileName is the name of the file in which the solution should be
+stored

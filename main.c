@@ -6,7 +6,7 @@
 #include "dfs.h"
 
 #define MAXLEN 256
-#define MAXDEPTH 5000
+#define MAXDEPTH 50000
 
 char path[MAXDEPTH];
 char shortespath[MAXDEPTH];
@@ -32,6 +32,7 @@ int main(int argc, char* argv[]){
         strncpy(SolutionFileName, argv[2], MAXLEN);
     }
     else if(argc == 4){
+        //if set -d option, it will display maze graph.
         isDisplay = strcmp(argv[1], "-d") == 0;
         strncpy(MazeFileName, argv[2], MAXLEN);
         strncpy(SolutionFileName, argv[3], MAXLEN);
@@ -40,23 +41,29 @@ int main(int argc, char* argv[]){
         usage();
         exit(1);
     }
+    //allocate new maze to store the maze info.
     if((maze = Maze_new()) ==NULL)
         ;
+    //read maze info from MazeFileName.
     if(!Maze_read(maze, MazeFileName)){
         printf("read maze file error\n");
         exit(1);
     }
     //Maze_print_test(maze);
     shortMaze = Maze_new();
+    //display
     if(isDisplay){
         Maze_display(maze);
+        //get the path image to show how to reach the end.
         getShortestMaze(maze, Maze_getStart(maze), 0, shortMaze);
         Maze_display(shortMaze);
     }
+    //get shortest path.
     if(!getShortestPath(maze, Maze_getStart(maze), 0, path, shortespath)){
         printf("Can't find path from start to end\n");
         exit(1);
     }
+    //write to SolutionFileName
     if(!Maze_write(shortespath, SolutionFileName)){
         printf("write maze file error\n");
         exit(1);
@@ -64,9 +71,6 @@ int main(int argc, char* argv[]){
     else{
         printf("Write SolutionFile Success\n");
     }
-
-
-
 
     exit(0);
 
