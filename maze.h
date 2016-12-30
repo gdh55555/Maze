@@ -1,5 +1,5 @@
-#ifndef _MAZE_H
-#define _MAZE_H
+#ifndef _MAZE_H_
+#define _MAZE_H_
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,11 +45,17 @@ int** Maze_alloc(int ROW, int COL, int i, int** mptr);
  * read maze from file
  */
 bool Maze_read(Maze maze, char* MazeFileName);
+bool Maze_write(char* shortest, char* SolutionFileName);
 
 /**
  * display maze
  */
 void Maze_display(Maze maze);
+
+bool Maze_copy(Maze dst, Maze src);
+
+void Maze_free(Maze *maze);
+
 /**
  * check (x,y) is a room or not
  */
@@ -64,6 +70,13 @@ Room getRoom(Maze maze, int x, int y);
  * mark the room with characters
  */
 void Maze_setMark(Room room, char m);
+char Maze_getMark(Room room);
+
+Room Maze_getStart(Maze maze);
+Room Maze_getEnd(Maze maze);
+
+int Maze_getNeighbor(Maze maze, Room room, Room* neighbor, bool walls);
+char Maze_getDirection(Maze maze, Room room, Room neighbor);
 
 void Maze_print_test(Maze maze);
 

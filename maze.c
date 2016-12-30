@@ -1,4 +1,6 @@
 #include "maze.h"
+#include <stdlib.h>
+#include <string.h>
 
 struct room_struct{
     int wall;
@@ -19,10 +21,13 @@ Maze Maze_new(void){
     return maze;
 }
 
+
 bool Maze_read(Maze maze, char* MazeFileName){
     FILE *MazeFile ;
     int sx, sy, ex, ey;
-    bool isSucess = false;
+    bool isSucess;
+
+    isSucess = false;
     if((MazeFile = fopen(MazeFileName, "r")) == NULL){
         printf("Maze File can't read\n");
         goto ERROR;
@@ -59,6 +64,27 @@ bool Maze_read(Maze maze, char* MazeFileName){
 ERROR:
     return isSucess;
 
+}
+
+bool Maze_write(char* shortest, char* SolutionFileName){
+    int len;
+    bool isSucess;
+    FILE* SolutionFile;
+
+    isSucess = false;
+    if((SolutionFile = fopen(SolutionFileName, "w")) == NULL){
+        printf("Solution File can't write\n");
+        goto ERROR;
+    }
+
+    len = strlen(shortest);
+    fprintf(SolutionFile, "%d\n", len);
+    for(int i = 0; i < len; i++)
+        fprintf(SolutionFile, "%c",  shortest[i]);
+    fprintf(SolutionFile, "\n");
+    isSucess = true;
+ERROR:
+    return isSucess;
 }
 
 void printBorder(Maze maze, int x, int direction){
@@ -110,6 +136,47 @@ void Maze_display(Maze maze){
 
 }
 
+int getX(Maze maze, Room room){
+    return (room-maze->matrix) / (maze->col);
+}
+
+int getY(Maze maze, Room room){
+    return (room-maze->matrix) % (maze->col);
+}
+
+bool Maze_copy(Maze dst, Maze src){
+    int x, y;
+    bool isSucess;
+
+    isSucess = false;
+
+    if(!dst || !src)
+        goto ERROR;
+    memcpy(dst, src, sizeof(*src));
+    dst->matrix = malloc(sizeof(*src->matrix) * src->row * src->col);
+    if(!dst->matrix)
+        goto ERROR;
+    memcpy(dst->matrix, src->matrix, sizeof(*src->matrix) * src->row * src->col );
+    x = getX(src, src->start);
+    y = getY(src, src->start);
+    dst->start = getRoom(dst, x, y);
+    x = getX(src, src->end);
+    y = getY(src, src->end);
+    dst->end = getRoom(dst, x, y);
+    isSucess = true;
+ERROR:
+    return isSucess;
+
+}
+
+void Maze_free(Maze *maze){
+    if(*maze){
+        free((*maze)->matrix);
+    }
+    free(*maze);
+    *maze = NULL;
+}
+
 bool isRoom(Maze maze, int x, int y){
     return x >=0 && x < maze->row && y >= 0 && y < maze->col;
 }
@@ -121,9 +188,71 @@ Room getRoom(Maze maze, int x, int y){
         return NULL;
 }
 
+
+bool hasWall(Room room, int wall){
+    return (room->wall & wall) != 0;
+}
+
 void Maze_setMark(Room room, char m){
     if(room)
         room->mark = m;
+}
+
+char Maze_getMark(Room room){
+    return room->mark;
+}
+
+Room Maze_getStart(Maze maze){
+    return maze->start;
+}
+Room Maze_getEnd(Maze maze){
+    return maze->end;
+}
+
+int Maze_getNeighbor(Maze maze, Room room, Room* neighbor, bool walls){
+    int x,y, count;
+
+    count = 0;
+    for(int i = 0; i < 4; i++)
+        neighbor[i] = NULL;
+    if(!maze || !room)
+        goto ERROR;
+    x = getX(maze, room);
+    y = getY(maze, room);
+    if(hasWall(room, U) == walls)
+        if((neighbor[count] = getRoom(maze, x-1, y)))
+            count++;
+    if(hasWall(room, D) == walls)
+        if((neighbor[count] = getRoom(maze, x+1, y)))
+            count++;
+    if(hasWall(room, L) == walls)
+        if((neighbor[count] = getRoom(maze, x, y-1)))
+            count++;
+    if(hasWall(room, R) == walls)
+        if((neighbor[count] = getRoom(maze, x, y+1)))
+            count++;
+
+ERROR:
+    return count;
+
+}
+
+char Maze_getDirection(Maze maze, Room room, Room neighbor){
+    int rx, ry, nx, ny;
+    rx = getX(maze, room);
+    ry = getY(maze, room);
+
+    nx = getX(maze, neighbor);
+    ny = getY(maze, neighbor);
+
+    if(rx == nx && ry == ny - 1)
+        return 'R';
+    else if(rx == nx && ry == ny + 1)
+        return 'L';
+    else if(rx == nx - 1 && ry == ny)
+        return 'D';
+    else if(rx == nx + 1 && ry == ny)
+        return 'U';
 }
 
 void Maze_print_test(Maze maze){

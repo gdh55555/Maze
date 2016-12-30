@@ -3,8 +3,13 @@
 #include <stdbool.h>
 #include <string.h>
 #include "maze.h"
+#include "dfs.h"
 
 #define MAXLEN 256
+#define MAXDEPTH 5000
+
+char path[MAXDEPTH];
+char shortespath[MAXDEPTH];
 
 
 void usage(){
@@ -19,7 +24,7 @@ int main(int argc, char* argv[]){
     char MazeFileName[MAXLEN], SolutionFileName[MAXLEN];
     //display the maze or not; default false; use -d to open it
     bool isDisplay = false;
-    Maze maze;
+    Maze maze, shortMaze;
 
     //check argc
     if(argc == 3){
@@ -41,12 +46,28 @@ int main(int argc, char* argv[]){
         printf("read maze file error\n");
         exit(1);
     }
-    Maze_print_test(maze);
-    Maze_display(maze);
+    //Maze_print_test(maze);
+    shortMaze = Maze_new();
+    if(isDisplay){
+        Maze_display(maze);
+        getShortestMaze(maze, Maze_getStart(maze), 0, shortMaze);
+        Maze_display(shortMaze);
+    }
+    if(!getShortestPath(maze, Maze_getStart(maze), 0, path, shortespath)){
+        printf("Can't find path from start to end\n");
+        exit(1);
+    }
+    if(!Maze_write(shortespath, SolutionFileName)){
+        printf("write maze file error\n");
+        exit(1);
+    }
+    else{
+        printf("Write SolutionFile Success\n");
+    }
 
 
 
-    printf("OK\n");
+
     exit(0);
 
 

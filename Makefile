@@ -1,5 +1,5 @@
 
-PROGS:= main.o maze.o
+PROGS:= main.o maze.o dfs.o
 
 CFLAGS = -Wall -std=c99 -g
 
