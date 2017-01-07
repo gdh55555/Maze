@@ -140,7 +140,7 @@ int Maze_getNeighbor(Maze maze, Room room, Room* neighbor, bool walls);
 /**
  * Get direction between room and its neighbor.
  * return char to show its move operations.
- * if from room to neighbor should move up, it retrun 'U'.
+ * if it move from room to neighbor should move up, it retrun 'U'.
  */
 char Maze_getDirection(Maze maze, Room room, Room neighbor);
 

@@ -3,7 +3,7 @@
 #include "maze.h"
 
 /**
- * DFS to get shotest path from the start position to the end position
+ * DFS to get shortest path from the start position to the end position
  * it save the path from the start to the end, use '#' marks.
  * room The first room is the start room, and then alter.
  * depth The depth of the recursion
@@ -12,7 +12,7 @@
 int getShortestMaze(Maze maze, Room room, int depth, Maze shortest);
 
 /**
- * DFS to get shotest path from the start position to the end position
+ * DFS to get shortest path from the start position to the end position
  * it save the move operations to shortestPath
  * room The first room is the start room, and then alter.
  * depth The depth of the recursion

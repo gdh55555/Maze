@@ -4,7 +4,7 @@
 
 int getShortestMaze(Maze maze, Room room, int depth, Maze shortest){
     int nsize;
-    static int shortDepth = INT_MAX;
+    static int shortDepth, solutionCount;
     char mark;
     Room neighbor[4];
 
@@ -15,10 +15,11 @@ int getShortestMaze(Maze maze, Room room, int depth, Maze shortest){
     //reach the end.
     if(room == Maze_getEnd(maze)){
         //copy shortest Maze and update the value of shortDepth.
-        if(depth < shortDepth){
+        if(depth < shortDepth || solutionCount == 0){
             Maze_copy(shortest, maze);
             shortDepth = depth;
         }
+		solutionCount++;
         return shortDepth;
     }
 
@@ -49,26 +50,28 @@ void pathCopy(char* dst, char* src, int len){
 }
 
 bool getShortestPath(Maze maze, Room room, int depth, char* path, char* shortestPath){
-    int nsize;
     static int shortDepth = INT_MAX;
-    static bool isFindPath = false;
+    //bool isFindPath = false;
+	int nsize;
     char mark;
     Room neighbor[4];
+	bool isFinded;
 
+	isFinded = false;
     mark = Maze_getMark(room);
     //check it whether visit or not.
-    if(mark == Room_visit)
-        return isFindPath;
+    if(mark != Room_empty)
+        return isFinded;
     //reach the end.
     if(room == Maze_getEnd(maze)){
-        isFindPath = true;
+        isFinded = true;
         //update shortestPath and shortDepth.
         if(depth < shortDepth){
             //update.
             pathCopy(shortestPath, path, depth);
             shortDepth = depth;
         }
-        return isFindPath;
+        return isFinded;
     }
 
     //set visit mark to the visiting room.
@@ -80,9 +83,14 @@ bool getShortestPath(Maze maze, Room room, int depth, char* path, char* shortest
         //record the move operation.
         path[depth] = Maze_getDirection(maze, room, neighbor[i]);
         //recurse
-        getShortestPath(maze, neighbor[i], depth+1, path, shortestPath);
+        isFinded |= getShortestPath(maze, neighbor[i], depth + 1, path, shortestPath);
+        //return isFindPath;
+        //;
     }
     //reset the mark of the room.
-    Maze_setMark(room, Room_empty);
-    return isFindPath;
+	if (isFinded)
+		Maze_setMark(room, Room_empty);
+	else
+		Maze_setMark(room, Room_canot);
+    return isFinded;
 }
